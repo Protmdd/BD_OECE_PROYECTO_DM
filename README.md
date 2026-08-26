@@ -28,7 +28,7 @@ Las bases (CONOSCE: Postores, Adjudicaciones, Convocatorias, Consorcios; más En
 
 ## Cómo ejecutarlo
 
-Pensado para correr en Google Colab:
+Para correr en Google Colab:
 
 1. Abre `ENTREGA_3_Proyecto_DM_OECE_FINAL.ipynb` en Colab.
 2. Ejecuta las celdas en orden, de arriba hacia abajo. La primera celda clona el repositorio de datos; las siguientes instalan las dependencias que falten (`python-calamine`, `geopandas`).
