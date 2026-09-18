@@ -1,3 +1,0 @@
-*.xlsx filter=lfs diff=lfs merge=lfs -text
-*.csv filter=lfs diff=lfs merge=lfs -text
-Bases[[:space:]]de[[:space:]]Datos[[:space:]]Proyecto[[:space:]]DM/* filter=lfs diff=lfs merge=lfs -text
