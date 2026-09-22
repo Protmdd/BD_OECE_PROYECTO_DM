@@ -30,7 +30,7 @@ Las bases (CONOSCE: Postores, Adjudicaciones, Convocatorias, Consorcios; más En
 
 Pensado para correr en Google Colab:
 
-1. Abre `ENTREGA_3_Proyecto_DM_OECE_FINAL.ipynb` en Colab.
+1. Abre `HITO_2_Proyecto_DM_OECE_FINAL.ipynb` en Colab.
 2. Ejecuta las celdas en orden, de arriba hacia abajo. La primera celda clona el repositorio de datos; las siguientes instalan las dependencias que falten (`python-calamine`, `geopandas`).
 3. El notebook genera al final `proveedores_integrado_analisis_FINAL.xlsx` en `/content`.
 
@@ -40,7 +40,7 @@ Pensado para correr en Google Colab:
 git clone <url-de-este-repositorio>
 cd <carpeta-del-repositorio>
 pip install pandas numpy matplotlib seaborn scikit-learn geopandas python-calamine requests
-jupyter notebook ENTREGA_3_Proyecto_DM_OECE_FINAL.ipynb
+jupyter notebook HITO_2_Proyecto_DM_OECE_FINAL.ipynb
 ```
 
 Algunas celdas usan `display()` y `!pip install`, propios de Colab/Jupyter. Si lo corres en otro entorno, adapta esas líneas y cambia las rutas `BASE`, `CACHE` y `OUTPUT_DIR` (definidas al inicio del notebook, actualmente apuntan a `/content/...`).
