@@ -22,7 +22,6 @@ BD_OECE_PROYECTO_DM/
 ├── Bases de Datos Proyecto DM/          # fuentes (Git LFS)
 ├── HITO_2_Proyecto_DM_OECE_FINAL.ipynb  # integración, calidad y matriz analítica
 ├── Hito3_Proyecto_OECE_DM_.ipynb        # PCA, NMF, clustering, perfiles y mapas
-├── .gitattributes                       # rastrea la carpeta de datos con Git LFS
 └── README.md
 ```
 
