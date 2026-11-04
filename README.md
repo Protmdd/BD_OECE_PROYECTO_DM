@@ -1,6 +1,6 @@
 # Segmentación de proveedores en contrataciones de municipalidades provinciales del Perú (2021–2025)
 
-Proyecto de minería de datos que busca identificar segmentos naturales de proveedores que participan en procesos de contratación de municipalidades provinciales del Perú, a partir de sus patrones de participación, adjudicación, escala económica y alcance territorial.
+Proyecto de minería de datos que identifica segmentos naturales de proveedores que participan en procesos de contratación de municipalidades provinciales del Perú, a partir de sus patrones de participación, adjudicación, escala económica y alcance territorial.
 
 **Grupo Diamond Finders**
 - Gianella Silvestre Nina
@@ -9,65 +9,105 @@ Proyecto de minería de datos que busca identificar segmentos naturales de prove
 
 ## Descripción
 
-La información de contrataciones públicas registrada en el SEACE está distribuida entre múltiples fuentes (postores, adjudicaciones, convocatorias, consorcios, entidades contratantes y penalidades), lo que dificulta identificar directamente los distintos perfiles de proveedores que operan en el mercado. Este notebook integra esas fuentes a nivel de proveedor —agregando su comportamiento durante 2021–2025—, aplica un diagnóstico de calidad, transforma y escala las variables relevantes, y construye la matriz analítica lista para clustering.
+La información de contrataciones públicas registrada en el SEACE está distribuida entre múltiples fuentes (postores, adjudicaciones, convocatorias, consorcios, entidades contratantes y penalidades), lo que dificulta identificar los distintos perfiles de proveedores que operan en el mercado. El proyecto integra esas fuentes a nivel de proveedor (comportamiento agregado 2021–2025), construye una matriz analítica y segmenta a los proveedores con técnicas de reducción de dimensión y clustering.
 
-Unidad de análisis: **proveedor postor**. Cada fila del dataset integrado resume el comportamiento agregado de un proveedor (número de convocatorias, ítems adjudicados, tasa de adjudicación, monto total adjudicado, alcance territorial, participación en consorcios y penalidades).
+**Unidad de análisis:** proveedor postor. Cada fila resume su comportamiento agregado: número de convocatorias, ítems adjudicados, tasa de adjudicación, monto total adjudicado, alcance territorial, rubros, trayectoria, participación en consorcios y penalidades.
 
-## Contenido del notebook
+**Alcance:** 47 281 proveedores que participaron entre enero de 2021 y diciembre de 2025 en las contrataciones de las 196 municipalidades provinciales, más la Municipalidad Metropolitana de Lima (197 entidades de las 3 363 registradas).
+
+## Estructura del repositorio
+
+```
+BD_OECE_PROYECTO_DM/
+├── Bases de Datos Proyecto DM/          # fuentes (Git LFS)
+├── HITO_2_Proyecto_DM_OECE_FINAL.ipynb  # integración, calidad y matriz analítica
+├── Hito3_Proyecto_OECE_DM_.ipynb        # PCA, NMF, clustering, perfiles y mapas
+├── .gitattributes                       # rastrea la carpeta de datos con Git LFS
+└── README.md
+```
+
+La carpeta `Bases de Datos Proyecto DM` contiene las bases de CONOSCE por año (2021–2025): `CONOSCE_POSTOR`, `CONOSCE_ADJUDICACIONES`, `CONOSCE_CONVOCATORIAS` y `CONOSCE_CONSORCIO`, además de `entidades_contratantes.csv` y `penalidades.csv`.
+
+## Hito 2: integración y matriz analítica
+
+Notebook: `HITO_2_Proyecto_DM_OECE_FINAL.ipynb`
 
 1. Problema, usuario y objetivo de análisis
 2. Fuentes de datos y unidad de análisis
 3. Claves y plan de integración (diagrama entidad-relación)
 4. Diagnóstico preliminar de calidad
-5. Código central
-   - Carga de datos
-   - Detección de valores faltantes, duplicados, errores de tipo, outliers (IQR) y categorías raras
-   - Integración de las fuentes por niveles (ítem de convocatoria → filtro poblacional → colapso a proveedor → consorcios → penalidades)
-6. Visualizaciones iniciales y hallazgos (concentración del monto adjudicado, frecuencia × efectividad, frecuencia × alcance territorial)
-7. Decisiones de limpieza, transformaciones justificadas y matriz analítica
-   - Variables derivadas y reglas de negocio
-   - Detección de outliers en la base de trabajo
-   - Discretización para interpretabilidad
-   - Escalamiento (Z-score vs. Min-Max) y selección de variables
-   - Ensamblaje de `base_interpretativa` y `matriz_analitica`
-8. Próximos pasos (determinación de K, clustering, perfilamiento y análisis de penalidades)
+5. Código central: carga, detección de faltantes, duplicados, errores de tipo, outliers (IQR) y categorías raras, e integración por niveles (ítem de convocatoria → filtro poblacional → colapso a proveedor → consorcios → penalidades)
+6. Visualizaciones iniciales y hallazgos
+7. Decisiones de limpieza, transformaciones justificadas y matriz analítica (variables derivadas, outliers, discretización, escalamiento Z-score y selección de variables)
+8. Próximos pasos
 
-## Fuentes de datos
+**Salidas** (se guardan en `/content` al correr en Colab):
 
-Las bases (CONOSCE: Postores, Adjudicaciones, Convocatorias, Consorcios; más Entidades Contratantes y Penalidades) no están incluidas en este repositorio. El notebook las descarga automáticamente al ejecutarse, clonando [BD_OECE_PROYECTO_DM](https://github.com/Protmdd/BD_OECE_PROYECTO_DM) mediante Git LFS en `/content/BD_OECE_PROYECTO_DM`. No es necesario descargarlas a mano.
+| Salida | Contenido |
+|---|---|
+| `proveedores_integrado_analisis_FINAL.xlsx` | Hojas `dataset_integrado` (una fila por proveedor), `calidad_por_columna`, `describe_numericas`, `outliers_iqr` y `correlaciones` |
+| `matriz_analitica_OECE.csv` | `ruc_proveedor` (solo trazabilidad) + 7 variables continuas con Z-score + `participa_en_consorcio` |
+| `base_interpretativa` (objeto en memoria) | Variables en unidades originales, derivadas y discretizadas (`grupo_frecuencia`, `grupo_monto`), para perfilar segmentos |
 
-## Cómo ejecutarlo
+## Hito 3: reducción de dimensión, clustering y perfilamiento
 
-Pensado para correr en Google Colab:
+Notebook: `Hito3_Proyecto_OECE_DM_.ipynb`
 
-1. Abre `HITO_2_Proyecto_DM_OECE_FINAL.ipynb` en Colab.
-2. Ejecuta las celdas en orden, de arriba hacia abajo. La primera celda instala Git LFS y clona el repositorio de datos; las siguientes instalan las dependencias que falten (`geopandas`, entre otras).
-3. El notebook genera, a partir de `df_proveedores`, los objetos `base_interpretativa` (variables originales y discretizadas, para perfilar los segmentos) y `matriz_analitica` (variables escaladas mediante Z-score, lista como insumo para K-Means).
+| N.° | Sección | Contenido |
+|---:|---|---|
+| 1 | Carga de datos y límites provinciales | Matriz integrada y límites provinciales; verificación de cobertura |
+| 2 | Preparación de las variables | 7 variables, `log1p`, Z-score y correlaciones |
+| 3 | PCA | Número de componentes (regla del 85 % y Kaiser), cargas e interpretación |
+| 4 | NMF | Elección de k por error de reconstrucción y lectura de patrones |
+| 5 | Matrices para clustering | Comparación de 7 variables, PCA y NMF |
+| 6 | Métodos de clustering | K-means, DBSCAN, jerárquico (Ward) y comparación con silueta, Davies-Bouldin, Calinski-Harabasz y ARI |
+| 7 | Selección provisional y estabilidad | K-means con k = 6 sobre PCA, cruce con DBSCAN y estabilidad |
+| 8 | Perfil de los segmentos | Nombres, tabla de perfil, concentración del monto, consorcio y penalidades |
+| 9 | Distribución territorial | Mapa interactivo por provincia (GeoPandas y Plotly), caso de Lima y composición por departamento |
+| 10 | Conclusiones preliminares | Decisiones, parámetros y conclusiones |
+| 11 | Problemas y trabajo pendiente | Limitaciones antes del Hito 4 |
+| 12 | Guardado de resultados | Exportación a CSV |
+
+### Segmentos identificados (K-means, k = 6, sobre PCA de 3 componentes)
+
+| N.° | Segmento | % de proveedores | Cómo se define |
+|---:|---|---:|---|
+| 0 | Ganadores de una sola vez | 29,5 % | Una convocatoria y la ganó |
+| 1 | Postores de una sola vez sin éxito | 48,3 % | Una convocatoria y no ganó |
+| 2 | Postores recurrentes sin éxito | 7,1 % | Varias convocatorias en varios meses y ninguna adjudicación |
+| 3 | Ganadores recurrentes | 8,5 % | Varias convocatorias y adjudicaciones en al menos una |
+| 4 | Generalistas multirrubro | 3,8 % | Operan en más de un rubro (2,05 en promedio) |
+| 5 | Grandes operadores multimunicipales | 2,8 % | Mediana de 20 convocatorias, 8 municipalidades y más de 3 años de trayectoria |
+
+La solución es provisional y se validará en el Hito 4. K-means sobre PCA y Ward (k = 6) coinciden con un ARI de 0,989, y la partición se reproduce con otras semillas (ARI mayor a 0,999).
+
+**Salidas** (se guardan en el directorio de trabajo): `etiquetas_segmentos.csv`, `comparacion_kmeans.csv` y `comparacion_metodos.csv`.
+
+## Cómo ejecutarlos
+
+Los dos notebooks están pensados para Google Colab. Ejecuta las celdas en orden, de arriba hacia abajo.
+
+- **Hito 2:** la primera celda instala Git LFS, clona este repositorio en `/content/BD_OECE_PROYECTO_DM` (las bases se descargan solas) e instala `python-calamine` si falta. Las dependencias de mapas (`geopandas`) se instalan en la celda que las usa.
+- **Hito 3:** clona dos repositorios de apoyo: [Matriz_Integrada_DM_OECE](https://github.com/Protmdd/Matriz_Integrada_DM_OECE) (`proveedores_integrado.xlsx`, hoja `dataset_integrado`, resultado del Hito 2) y [limites-peru-geojson](https://github.com/josedaniel-cb/limites-peru-geojson) (`LIM_PROVINCIAL_PERU.json`). No necesita descargar nada a mano.
 
 ### Ejecución local
 
 ```bash
-git clone <url-de-este-repositorio>
-cd <carpeta-del-repositorio>
-pip install pandas numpy matplotlib seaborn scikit-learn geopandas requests
-jupyter notebook HITO_2_Proyecto_DM_OECE_FINAL.ipynb
+git lfs install
+git clone https://github.com/Protmdd/BD_OECE_PROYECTO_DM.git
+cd BD_OECE_PROYECTO_DM
+pip install pandas numpy matplotlib seaborn scikit-learn scipy geopandas plotly openpyxl python-calamine requests
+jupyter notebook
 ```
 
-Algunas celdas usan `display()` y comandos de shell (`!apt-get`, `!git lfs`), propios de Colab/Jupyter. Si lo corres en otro entorno, adapta esas líneas e instala Git LFS manualmente antes de clonar el repositorio de datos.
-
-## Salida
-
-El notebook produce dos tablas principales, ambas derivadas de `df_proveedores` (45,754 proveedores, dataset integrado):
-
-| Objeto | Filas | Contenido |
-|---|---|---|
-| `base_interpretativa` | 45,754 | Variables en sus unidades originales, variables derivadas (alcance territorial, trayectoria, indicadores) y variables discretizadas (`grupo_frecuencia`, `grupo_monto`); no se usa para el modelo, sino para perfilar los clústeres |
-| `matriz_analitica` | 45,754 | `ruc_proveedor` (solo trazabilidad) + variables numéricas escaladas por Z-score (`n_convocatorias`, `n_items_adjudicados`, `tasa_adjudicacion`, `monto_total_adjudicado`, `n_municipalidades`, `n_rubros`, `dias_trayectoria`) más `participa_en_consorcio`; es el insumo directo para K-Means |
+Algunas celdas usan `display()` y comandos de shell (`!apt-get`, `!git lfs`, `!pip`), propios de Colab/Jupyter. Fuera de Colab, adapta esas líneas y las rutas que apuntan a `/content/...`.
 
 ## Notas
 
 - Los montos se convierten a soles usando el tipo de cambio promedio anual del BCRP; queda documentado como aproximación conocida.
-- El análisis se limita a procesos de **municipalidades provinciales**, filtradas a partir de Entidades Contratantes (196 de 3,363 entidades registradas).
-- Las penalidades se conservan como variable de caracterización de los segmentos y quedan fuera de la matriz analítica: se cruzarán con los clústeres ya formados, no se usan para formarlos.
-- Los valores atípicos (IQR) detectados en montos y cantidades no se eliminan: se consideran proveedores o procesos de gran escala real. Su influencia en el modelo se controla mediante el escalamiento Z-score, no mediante su exclusión.
-- `n_departamentos` se calcula y conserva en `base_interpretativa`, pero se excluye de `matriz_analitica` por su alta correlación con `n_municipalidades`.
+- El análisis cubre municipalidades provinciales y la Municipalidad Metropolitana de Lima, filtradas a partir de Entidades Contratantes (197 de 3 363 entidades).
+- Las penalidades y la participación en consorcio quedan fuera del modelo: se usan solo para caracterizar los segmentos ya formados, para evitar circularidad.
+- Los valores atípicos no se eliminan: son proveedores o procesos de gran escala real. Se controlan con `log1p` y Z-score; sin `log1p`, K-means aísla a un solo proveedor en un cluster propio.
+- El 53,9 % de los proveedores tiene un perfil idéntico al de otro, lo que infla la silueta; por eso DBSCAN se ejecuta sobre perfiles únicos con pesos.
+- `n_departamentos` se conserva en `base_interpretativa`, pero queda fuera de la matriz analítica por su alta correlación con `n_municipalidades`.
+- Cada proveedor cuenta en todas las provincias donde participó, por lo que los conteos por provincia suman más que los 47 281 proveedores.
