@@ -147,7 +147,3 @@ jupyter notebook Hito4_OECE_DiamondFinders.ipynb
 - Las penalidades quedan fuera del modelo, y su integración tiene llaves por validar (569 de 1 278 proveedores con penalidad no tienen ítems adjudicados). No se interpretan sanciones ni riesgo.
 - Cinco años agregados en una fila: no hay evolución temporal ni causalidad.
 - La pertenencia a un segmento no demuestra irregularidades ni predice adjudicaciones futuras.
-
-## Entrega
-
-El paper final (IEEE, LaTeX) y este repositorio se entregan por Blackboard. Los resultados del paper, el repositorio y la exposición coinciden con la ejecución del notebook del Hito 4.
